@@ -1,2 +1,3 @@
-# turing-gen-art
-Turing Machine Generative Art
+# Turing Machine Generative Art
+
+Haskell implementation of http://maximecb.github.io/Turing-Drawings/
