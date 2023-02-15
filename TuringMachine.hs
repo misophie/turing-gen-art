@@ -1,5 +1,10 @@
 module TuringMachine where
 
+    -- TODO:
+    -- state and symbol should probably be custom data types
+    -- action as a function/series of functions
+    -- (?) should the turing machine iterate over here or where it is used?
+
     -- programs.js in Maxime's code
 
     -- machine has:
@@ -11,7 +16,5 @@ module TuringMachine where
 
     -- I'm assuming that the actions should wrap around the map,
     -- so moving right, past the canvas, will land you on the left side
-
-    -- should the turing machine iterate over here or where it is used?
 
     -- functions for each action
