@@ -17,4 +17,9 @@ module TuringMachine where
     -- I'm assuming that the actions should wrap around the map,
     -- so moving right, past the canvas, will land you on the left side
 
-    -- functions for each action
+    -- data State
+    -- data Symbol
+    -- (?) data Action
+
+    -- type Dimensions = 
+    -- type TuringMachine = State -> Symbol -> [Action] -> Dimensions -> State
