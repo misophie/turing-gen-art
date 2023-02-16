@@ -4,6 +4,7 @@ module TuringMachine where
     -- state and symbol should probably be custom data types
     -- action as a function/series of functions
     -- (?) should the turing machine iterate over here or where it is used?
+        -- the ref code has program.update updating the states (5000 steps per call) and main.updateRender sets a cap on how many times update is called + renders
 
     -- programs.js in Maxime's code
 
