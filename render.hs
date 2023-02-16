@@ -1,14 +1,25 @@
 -- import Graphics.Rasterific
 import Reanimate
-module render where
+import 
+import NumberGenerator
+module Render where
 
-renderAnim = return ()
-renderImg = return ()
+test :: IO()
+test = Reanimate $ addStatic (mkBackground "cyan") $ staticFrame 1 $ mkText "Hello world"
+
+--renderAnim = return ()
+-- renderImg = return ()
+
+-- setScreenWidth :: IO() -> Width
+-- setScreenWidth = do {Reanimate.Width <- getLine} -- if custom
+
+-- setScreenHeight :: IO() -> Height
+-- setScreenHeight = do {Reanimate.Height <- getLine} -- if custom
+
+
 
 -- are we using rasterific or reanimate or both?
   -- think i prefer reanimate since it has useful built in constructors/svg output
-  -- limited to gifs with rasterific and we'll need special architecture to build frame-by-frame execution (rasterific.cacheDrawing is an option)
--- are we creating a new module for the rendering or is it all in main like main.js in the ref project?
 
 -- REANIMATE TO-DOs
 -- constructor for rgb in package 
@@ -19,9 +30,8 @@ renderImg = return ()
 -- one scene per turing randomization generated
 -- convert scene -> animation
 
--- RASTERIFIC TO-DOs
--- fn to generate color from rgb val (randomly generated) - fill function
--- fn to transition --> withTransition ?
--- fn to render --> render/cacheDrawing
+--
 
--- data rgb = rgb Int Int Int -- using int on the assumption that no frac are generated, get values from 
+-- color maps
+-- generateColor f = f (randomnum 0 1) -- where f -> Reanimate.magma/turbo etc depending on palette of choice, random num placeholder,
+-- range 0 - 1 inclusive
