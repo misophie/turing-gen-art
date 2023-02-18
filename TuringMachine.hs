@@ -21,6 +21,7 @@ module TuringMachine where
     type State = (Int, Int, Symbol)
     -- (?) deriving (Eq)
 
+    -- functions to access the triple
     first :: (a, b, c) -> a
     first (a, _, _) = a
 
@@ -43,7 +44,7 @@ module TuringMachine where
     type Transition = State -> State -> Action -> Dimensions -> State
 
     -- (height, width)
-    type Dimensions = (Integer, Integer)
+    type Dimensions = (Int, Int)
 
     -- 
     -- type TuringMachine = State -> [Transition] -> State
@@ -75,4 +76,7 @@ module TuringMachine where
     moveRight :: State -> TuringMachine -> State
     moveRight state1 machine = (machine !! (first state1 + 1)) !! second state1
 
-
+    -- initialize without any given inputs
+    blankInit :: Dimensions -> Symbol -> TuringMachine
+    -- blankInit dims symbol = [[symbol] * second dims] * first dims
+    blankInit dims symbol = [[(x, y, symbol) | x <- [0..fst dims]] | y <- [0..snd dims]]
