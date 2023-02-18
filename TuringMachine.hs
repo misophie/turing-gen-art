@@ -2,8 +2,8 @@ module TuringMachine where
 
     -- TODO:
     -- (?) should the turing machine iterate over here or where it is used?
-    -- create some initialization fn
     -- representation of symbol according to reanimate requirements
+    -- write some test cases for the 4 diff actions + basic init
 
     -- programs.js in Maxime's code
 
