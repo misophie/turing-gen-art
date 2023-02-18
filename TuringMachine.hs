@@ -37,3 +37,22 @@ module TuringMachine where
     -- go from one state to another using a transition
     type TuringMachine = State -> [Transition] -> State
 
+    -- defining different actions
+
+    -- y++
+    moveUp :: Action
+    moveUp state1 = ((fst (fst state1), snd (fst state1) + 1), snd state1)
+
+    -- y--
+    moveDown :: Action
+    moveDown state1 = ((fst (fst state1), snd (fst state1) - 1), snd state1)
+
+    -- x--
+    moveLeft :: Action
+    moveLeft state1 = ((fst (fst state1) - 1, snd (fst state1)), snd state1)
+
+    -- x++
+    moveRight :: Action
+    moveRight state1 = ((fst (fst state1) + 1, snd (fst state1)), snd state1)
+
+
