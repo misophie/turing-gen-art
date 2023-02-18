@@ -4,6 +4,7 @@ module TuringMachine where
     -- (?) should the turing machine iterate over here or where it is used?
     -- representation of symbol according to reanimate requirements
     -- write some test cases for the 4 diff actions + basic init
+    -- figure out how to also intiialize the transitions along with the Turing Machine
 
     -- programs.js in Maxime's code
 
@@ -76,7 +77,8 @@ module TuringMachine where
     moveRight :: State -> TuringMachine -> State
     moveRight state1 machine = (machine !! (first state1 + 1)) !! second state1
 
-    -- initialize without any given inputs
+    -- initialize given the same symbol across the canvas
     blankInit :: Dimensions -> Symbol -> TuringMachine
     -- blankInit dims symbol = [[symbol] * second dims] * first dims
     blankInit dims symbol = [[(x, y, symbol) | x <- [0..fst dims]] | y <- [0..snd dims]]
+    -- (?) how to initialize transitions WITH the Turing Machine?
