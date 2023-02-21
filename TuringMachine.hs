@@ -91,13 +91,24 @@ module TuringMachine where
     -- moveLeft :: Action
     -- moveLeft (State state1) = State ((fst (fst state1) - 1, snd (fst state1)), snd state1)
     moveLeft :: State -> TuringMachine -> State
-    moveLeft (State state1) machine = (machine !! (first state1 - 1)) !! second state1
+    moveLeft (State state1) machine = (machine !! second state1) !! (first state1 - 1)
+    -- Test Cases:
+    -- moveLeft (State (1, 0, Symbol 1)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (0, 0, 0)
+    -- moveLeft (State (1, 1, Symbol 3)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (0, 1, 2)
 
     -- x++
     -- moveRight :: Action
     -- moveRight (State state1) = State ((fst (fst state1) + 1, snd (fst state1)), snd state1)
     moveRight :: State -> TuringMachine -> State
-    moveRight (State state1) machine = (machine !! (first state1 + 1)) !! second state1
+    -- moveRight (State state1) machine = (machine !! (first state1 + 1)) !! second state1
+    moveRight (State state1) machine = (machine !! second state1) !! (first state1 + 1)
+    -- Test Cases:
+    -- moveRight (State (0, 0, Symbol 0)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (1, 0, 1)
+    -- moveRight (State (0, 1, Symbol 1)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (1, 1, 3)
 
 
     -- initialize the Turing Machine given the same symbol across the canvas
