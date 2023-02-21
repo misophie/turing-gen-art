@@ -3,7 +3,6 @@ module TuringMachine where
     -- TODO:
     -- (?) should the turing machine iterate over here or where it is used?
     -- representation of symbol according to reanimate requirements
-    -- write some test cases for the 4 diff actions + basic init
     -- figure out how to also intialize the transitions along with the Turing Machine
     -- implement wrapping in move using dimensions
 
@@ -65,46 +64,68 @@ module TuringMachine where
     -- defining different actions
     -- each action manipulates either the x or y coordinate to access the next
     -- appropriate state by using the TuringMachine type
+    -- and if the action would move out of bounds, wrap around to the other end of the 2D tape
 
     -- y++
-    -- moveUp :: Action
-    moveUp :: State -> TuringMachine -> State
-    moveUp (State state1) machine = (machine !! (second state1 + 1)) !! first state1
+    moveUp :: State -> Dimensions -> TuringMachine -> State
+    moveUp (State state1) (x, y) machine
+        | (second state1 + 1) < y = (machine !! (second state1 + 1)) !! first state1
+        | otherwise = head machine !! first state1
     -- Test Cases:
-    -- moveUp (State (0, 0, Symbol 0)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- moveUp (State (0, 0, Symbol 0)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
     -- returns/shows (0, 1, 2)
-    -- moveUp (State (1, 0, Symbol 1)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- moveUp (State (1, 0, Symbol 1)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
     -- returns/shows (1, 1, 3)
+    -- moveUp (State (0, 1, Symbol 2)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (0, 0, 0)
+    -- moveUp (State (1, 1, Symbol 3)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (1, 0, 1)
 
     -- y--
-    -- moveDown :: Action
-    moveDown :: State -> TuringMachine -> State
-    moveDown (State state1) machine = (machine !! (second state1 - 1)) !! first state1
+    moveDown :: State -> Dimensions -> TuringMachine -> State
+    moveDown (State state1) (x, y) machine 
+        | (second state1 - 1) >= 0 = (machine !! (second state1 - 1)) !! first state1
+        | otherwise = (machine !! (y-1)) !! first state1
     -- Test Cases:
-    -- moveUp (State (0, 1, Symbol 2)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- moveDown (State (0, 1, Symbol 2)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
     -- returns/shows (0, 0, 0)
-    -- moveUp (State (1, 1, Symbol 3)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- moveDown (State (1, 1, Symbol 3)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (1, 0, 1)
+    -- moveDown (State (0, 0, Symbol 0)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (0, 1, 2)
+    -- moveDown (State (1, 0, Symbol 1)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
     -- returns/shows (1, 1, 3)
 
     -- x--
-    -- moveLeft :: Action
-    moveLeft :: State -> TuringMachine -> State
-    moveLeft (State state1) machine = (machine !! second state1) !! (first state1 - 1)
-    -- Test Cases:
-    -- moveLeft (State (1, 0, Symbol 1)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
-    -- returns/shows (0, 0, 0)
-    -- moveLeft (State (1, 1, Symbol 3)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
-    -- returns/shows (0, 1, 2)
+    moveLeft :: State -> Dimensions -> TuringMachine -> State
+    moveLeft (State state1) (x, y) machine 
+        | (first state1 - 1) >= 0 = (machine !! second state1) !! (first state1 - 1)
+        | otherwise = (machine !! second state1) !! (x-1)
 
-    -- x++
-    moveRight :: State -> TuringMachine -> State
-    moveRight (State state1) machine = (machine !! second state1) !! (first state1 + 1)
     -- Test Cases:
-    -- moveRight (State (0, 0, Symbol 0)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- moveLeft (State (1, 0, Symbol 1)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (0, 0, 0)
+    -- moveLeft (State (1, 1, Symbol 3)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (0, 1, 2)
+    -- moveLeft (State (0, 0, Symbol 0)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
     -- returns/shows (1, 0, 1)
-    -- moveRight (State (0, 1, Symbol 1)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- moveLeft (State (0, 1, Symbol 1)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
     -- returns/shows (1, 1, 3)
 
+    -- x++
+    moveRight :: State -> Dimensions -> TuringMachine -> State
+    moveRight (State state1) (x, y) machine 
+        | (first state1 + 1) < x = (machine !! second state1) !! (first state1 + 1)
+        | otherwise = head (machine !! second state1)
+    -- Test Cases:
+    -- moveRight (State (0, 0, Symbol 0)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (1, 0, 1)
+    -- moveRight (State (0, 1, Symbol 1)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (1, 1, 3)
+    -- moveRight (State (1, 0, Symbol 1)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (0, 0, 0)
+    -- moveRight (State (1, 1, Symbol 3)) (2, 2) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- returns/shows (0, 1, 2)
 
     -- initialize the Turing Machine given the same symbol across the canvas
     blankInit :: Dimensions -> Symbol -> TuringMachine
