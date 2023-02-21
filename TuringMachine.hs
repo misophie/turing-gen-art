@@ -63,8 +63,10 @@ module TuringMachine where
     type TuringMachine = [[State]]
 
     -- defining different actions
+    -- each action manipulates either the x or y coordinate to access the next
+    -- appropriate state by using the TuringMachine type
 
-        -- y++
+    -- y++
     -- moveUp :: Action
     moveUp :: State -> TuringMachine -> State
     moveUp (State state1) machine = (machine !! (second state1 + 1)) !! first state1
@@ -74,7 +76,7 @@ module TuringMachine where
     -- moveUp (State (1, 0, Symbol 1)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
     -- returns/shows (1, 1, 3)
 
-        -- y--
+    -- y--
     -- moveDown :: Action
     moveDown :: State -> TuringMachine -> State
     moveDown (State state1) machine = (machine !! (second state1 - 1)) !! first state1
@@ -84,7 +86,7 @@ module TuringMachine where
     -- moveUp (State (1, 1, Symbol 3)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
     -- returns/shows (1, 1, 3)
 
-        -- x--
+    -- x--
     -- moveLeft :: Action
     moveLeft :: State -> TuringMachine -> State
     moveLeft (State state1) machine = (machine !! second state1) !! (first state1 - 1)
@@ -94,8 +96,7 @@ module TuringMachine where
     -- moveLeft (State (1, 1, Symbol 3)) [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
     -- returns/shows (0, 1, 2)
 
-        -- x++
-    -- moveRight :: Action
+    -- x++
     moveRight :: State -> TuringMachine -> State
     moveRight (State state1) machine = (machine !! second state1) !! (first state1 + 1)
     -- Test Cases:
