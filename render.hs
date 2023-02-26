@@ -64,6 +64,7 @@ module Render where
   -- and uses Reanimate's ColorMap functions to generate a pixel with a color that corresponds 
   -- to the given [0,1] double value. this will be the representation for that symbol in 
   -- rendering.
+
   -- TODO figure out if the [0,1] double representation actually works with the TuringMachine
   -- functionality or if we will have to devise some kind of calculation to convert it to the 
   -- required representation.
