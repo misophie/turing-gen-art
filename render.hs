@@ -53,8 +53,12 @@ module Render where
   -- generate a new sprite for the given state as specified for this particular frame. call 
   -- symbol transition to generate a new symbol at the given coordinates and with the 
   -- specified change in color. 
+  -- TBD: verify functionality of oTranslate, need animation ? 
+  -- generate a list of symbols beforehand so we don't get random generation?
   stateTransition :: Duration -> State -> Animation
-  stateTransition dur currstate = do $ newSprite $ mkCircle 
+  stateTransition dur currstate = do $ scene $ newSprite $ mkCircle 1 $ 
+    oTranslate <first currstate, second currstate> $ 
+    withFillColorPixel $ generateSymbol  (third currstate)
 
   -- takes an input of Symbol type and extracts the number value that represents the symbol 
   -- and uses Reanimate's ColorMap functions to generate a pixel with a color that corresponds 
