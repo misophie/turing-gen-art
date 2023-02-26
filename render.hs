@@ -7,54 +7,68 @@ module Render where
   import NumberGenerator
   import TuringMachine  
 
-  -- basic main function for accessing animation render. variables and data
-  -- from turing machine algorithm TBA.
-  -- creates blank canvas and sets colour, dimensions of canvas
-  -- initialises canvas animation function turingcanvas with max duration of play
-  -- and function for animating symbols (input for states and symbols thru main or later?)
-  main :: [State] -> IO ()
-  main states = reanimate $ scene $ do 
-    newSpriteSVG_ $ mkBackground "black" $ setWidth mapWidth $ setHeight mapHeight 
-    fork $ play $ map (transitionAnim 60) states 
-  -- output: SVG file with black canvas and Turing output. call in Main module to render?
+  -- TURING MACHINE FULL ANIMATION MAIN
+  -- basic main function for accessing animation render. variables and datazxcv 
+  -- from turing machine algorithm:
+  -- a. dimensions from Dimensions data type. fst -> width and snd -> height
+  -- b. states from TuringMachine data type. TuringMachine is a list of lists of states. 
+  -- creates blank canvas and sets colour, dimensions of canvas from Dimensions data type
+  -- the purpose of main is the sequential animation of each list of states one after
+  -- another by calling transitionAnim on each of the lists in TuringMachine.
+  -- the sequential animation is done through seqA
 
-  -- generates a group of animations for all symbols received from the turing machine according
-  -- to initial state
-  -- initialises symbols as PixelRGB8 represenations using the generateSymbol function
-  -- TODO expand stub with functionality for full list -- check if it is compatible with
-  -- Turing functionality. figure out how to call symbTransition
-  -- use parLoopA for simultaneous animation for all symbs?
+  -- TBD: conversion to scene needed? only there for play to remove the animation once its
+  -- done but seqA also does that.
+  -- use fold for seqA ?
+  rendermain :: Duration -> Dimensions -> TuringMachine -> IO ()
+  rendermain dur dims machine = reanimate $ mkAnimation dur $ scene $ do 
+    $ withViewBox(0, 0, (fst dims), (snd dims)) $ mkBackground "black" $ 
+    play $ seqA $ map (transitionAnim 1) machine
+  -- output: SVG file with black canvas and Turing output.
+  -- TO CALL:
+  -- main Double (Int, Int) blankInit 
 
-  -- generate animation for a single symbol/render using generateSymbol -> call for each
-  -- symbol on State list and return to symbsAnimation as mkGroup ; might be easier than 
-  -- doing it all at once in symbsAnimation
-  transitionAnimation :: State -> Animation
+  -- **in ghci. 
+  -- **duration in seconds. for duration --> 120s or less recommended.
+  -- **dimensions in pixels. for pixels --> 256/512 recommended
+  -- **make sure to have the full reanimate library installed or cloned. 
 
-  -- (?) 
-  -- generates a group of animations for the transitions of symbols from one state to another.
-  -- TODO expand stub, integrate into symbAnimation, figure out delay and how to implement 
-  -- TuringMachine functionality with this code
-  -- symbsTransition :: [Transition] -> Animation
-  -- symbsTransition lst = mkAnimation 600    
+  -- test cases:
+  -- rendermain 120 (512, 512) blankInit
+  -- rendermain 60 (256, 256) blankInit
 
-  -- generate animation for a single symbol for one transition and return to symbsTransition
-  -- using mkGroup; like symbAnimation might be easier than doing it all at once
-  -- symbTransition :: Transition -> Animation
+  -- LIST OF STATES ANIMATION PER FRAME (generates transition as a frame)
+  -- generate animation for a list of states of every symbol present and return it as an 
+  -- animation to main. creates a transition since it changes the states of the Turing Machine 
+  -- from one list of states to the consecutive one. 
+  -- the list of states represents the state of the entire Turing Machine at one point in
+  -- time or one frame. in main: assume 1 frame lasts 1s. can change later. 
+  -- since the animations for changing the states of all symbols on screen happens 
+  -- simultaneously, use fork for this animation.
+  transitionAnim :: Duration -> [State] -> Animation
+  transitionAnim dur lostates = mkAnimation dur $ scene $ fork 
+    $ play $ mkGroup $ map (stateTransition 1) lostates
 
-  -- REDUNDANT WITH FORK
-  -- compiles the diff symbol animations onto one canvas and returns it until duration > 0
-  -- duration currently dependent on one of the symbols' full duration to traverse canvas, but
-  -- might change to set dur since we plan on wrapping around the canvas
-  -- TODO expand stub
-  -- turingCanvas :: Double -> Animation -> Animation
-  -- turingCanvas dur animlst = mkAnimation (duration (last animlst)) 
+  -- STATE TRANSITION
+  -- generate a new sprite for the given state as specified for this particular frame. call 
+  -- symbol transition to generate a new symbol at the given coordinates and with the 
+  -- specified change in color. 
+  -- TBD: verify functionality of oTranslate, need animation ? 
+  -- generate a list of symbols beforehand so we don't get random generation?
+  stateTransition :: Duration -> State -> Animation
+  stateTransition dur currstate = do $ scene $ newSprite $ mkCircle 1 $ 
+    oTranslate <first currstate, second currstate> $ 
+    withFillColorPixel $ generateSymbol  (third currstate)
 
-  -- takes an input of Symbol type and extracts the number value that represents the symbol and
-  -- uses Reanimate's ColorMap functions to generate a pixel with a color that corresponds to the
-  -- given [0,1] double value. this will be the representation for that symbol in rendering.
+  -- takes an input of Symbol type and extracts the number value that represents the symbol 
+  -- and uses Reanimate's ColorMap functions to generate a pixel with a color that corresponds 
+  -- to the given [0,1] double value. this will be the representation for that symbol in 
+  -- rendering.
+
   -- TODO figure out if the [0,1] double representation actually works with the TuringMachine
   -- functionality or if we will have to devise some kind of calculation to convert it to the 
   -- required representation.
   generateSymbol :: Symbol -> PixelRGB8
-  generateSymbol (symb dbl) = turbo dbl -- assuming Symbol is of type (Symbol Double) containing a
-                                        -- double value between 0 and 1. can adjust as needed.
+  generateSymbol (symb dbl) = turbo dbl 
+  -- assuming Symbol is of type (Symbol Double) containing a double value between 0 and 1. 
+  -- can adjust as needed.
