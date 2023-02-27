@@ -57,7 +57,7 @@ module Render where
   -- generate a list of symbols beforehand so we don't get random generation?
   stateTransition :: Duration -> State -> Animation
   stateTransition dur currstate = do $ scene $ newSprite $ mkCircle 1 $ 
-    oTranslate <first currstate, second currstate> $ 
+    oTranslate (V2 (first currstate) (second currstate)) $ 
     withFillColorPixel $ generateSymbol  (third currstate)
 
   -- takes an input of Symbol type and extracts the number value that represents the symbol 
