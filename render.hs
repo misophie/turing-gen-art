@@ -69,6 +69,6 @@ module Render where
   -- functionality or if we will have to devise some kind of calculation to convert it to the 
   -- required representation.
   generateSymbol :: Symbol -> PixelRGB8
-  generateSymbol (symb dbl) = turbo dbl 
+  -- generateSymbol (symb dbl) = turbo dbl 
   -- assuming Symbol is of type (Symbol Double) containing a double value between 0 and 1. 
   -- can adjust as needed.
