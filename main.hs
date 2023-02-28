@@ -3,12 +3,14 @@ module Main where
 import System.IO
 import Text.Read
 import Data.Maybe
+import TuringMachine
+import Render
 
-statesLimit = 3
-symbolsLimit = 3
+statesLimit = 5
+symbolsLimit = 5
 
 -- 
-main :: IO (Int,Int)
+main :: IO ()
 main = 
     do 
         numStates <- intRequest "How many states do you want your turing machine to have?"
@@ -17,9 +19,9 @@ main =
         numSymbols <- intRequest "How many symbols?"
         numSymbols <- checkLimit numSymbols symbolsLimit
 
-        -- run turing machine
+        render <- rendermain (512,512) (blankInit (512,512) (TuringMachine.Symbol 1))
 
-        return (numStates,numSymbols)
+        return render
 
 checkLimit :: Int -> Int -> IO Int
 checkLimit num limit

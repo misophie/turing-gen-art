@@ -4,7 +4,6 @@ module Render where
   import Reanimate.Parameters
   import Reanimate.Scene
   import Reanimate.ColorMap
-  import NumberGenerator
   import TuringMachine  
 
   -- TURING MACHINE FULL ANIMATION MAIN
