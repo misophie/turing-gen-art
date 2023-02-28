@@ -1,10 +1,7 @@
 module TuringMachine where
 
     -- TODO:
-    -- (?) should the turing machine iterate over here or where it is used?
-    -- representation of symbol according to reanimate requirements
     -- figure out how to also intialize the transitions along with the Turing Machine
-    -- implement wrapping in move using dimensions
 
     -- programs.js in Maxime's code
 
@@ -16,10 +13,7 @@ module TuringMachine where
     -- mapWidth - dimension of the canvas
     -- mapHeight - dimension of the canvas
 
-    -- ((x, y) pixel value)
-    -- newtype State = State ((Integer, Integer), Symbol)
-    -- (x, y, pixel)
-    -- newtype State = State (Int, Int, Symbol)
+    -- (x, y, pixel colour)
     newtype State = State (Int, Int, Symbol)
         -- deriving (Show)
     -- (?) deriving (Eq)
@@ -29,30 +23,37 @@ module TuringMachine where
         show (State (a, b, c)) = "(" ++ show a ++ ", " ++ show b ++ ", " ++ show c ++ ")"
 
     -- functions to access the triple
-    first :: (a, b, c) -> a
-    first (a, _, _) = a
+    first :: State -> Int
+    first (State (a, _, _)) = a
 
-    second :: (a, b, c) -> b
-    second (_, b, _) = b
+    second :: State -> Int
+    second (State (_, b, _)) = b
 
-    third :: (a, b, c) -> c
-    third (_, _, c) = c
+    third :: State -> Symbol
+    third (State (_, _, c)) = c
 
     -- pixel value
-    newtype Symbol = Symbol Int -- stub for symbol, figure out what symbol is representing (RGB pixel?)
+    newtype Symbol = Symbol Int
         -- deriving (Show)
-    -- (?) 
 
     instance Show Symbol where
         show (Symbol a) = show a
 
     -- go from one state to another
-    type Action = State -> State
+    type Action = State -> Dimensions -> TuringMachine -> State
+        -- deriving (Show)
 
-    -- given a start state, new state, 
-    -- and action to choose the new start state using the bounds of the canvas (wrap around if out of bounds), 
-    -- return the new start state
-    type Transition = State -> State -> Action -> Dimensions -> State
+    -- Show for functions doesn't really work well... 
+    -- This is mainly for testing purposes
+    instance Show Action where
+        show _ = "An action!"
+
+    -- (action to move to the next state, )
+    newtype Transition = Transition (State, Action)
+        -- deriving (Show)
+
+    instance Show Transition where
+        show (Transition (a, b)) = "(" ++ show a ++ "," ++ show b ++ ")"
 
     -- (height, width)
     type Dimensions = (Int, Int)
@@ -67,8 +68,8 @@ module TuringMachine where
     -- and if the action would move out of bounds, wrap around to the other end of the 2D tape
 
     -- y++
-    moveUp :: State -> Dimensions -> TuringMachine -> State
-    moveUp (State state1) (x, y) machine
+    moveUp :: Action
+    moveUp state1 (x, y) machine
         | (second state1 + 1) < y = (machine !! (second state1 + 1)) !! first state1
         | otherwise = head machine !! first state1
     -- Test Cases:
@@ -82,8 +83,8 @@ module TuringMachine where
     -- returns/shows (1, 0, 1)
 
     -- y--
-    moveDown :: State -> Dimensions -> TuringMachine -> State
-    moveDown (State state1) (x, y) machine 
+    moveDown :: Action
+    moveDown state1 (x, y) machine 
         | (second state1 - 1) >= 0 = (machine !! (second state1 - 1)) !! first state1
         | otherwise = (machine !! (y-1)) !! first state1
     -- Test Cases:
@@ -97,8 +98,8 @@ module TuringMachine where
     -- returns/shows (1, 1, 3)
 
     -- x--
-    moveLeft :: State -> Dimensions -> TuringMachine -> State
-    moveLeft (State state1) (x, y) machine 
+    moveLeft :: Action
+    moveLeft state1 (x, y) machine 
         | (first state1 - 1) >= 0 = (machine !! second state1) !! (first state1 - 1)
         | otherwise = (machine !! second state1) !! (x-1)
 
@@ -113,8 +114,8 @@ module TuringMachine where
     -- returns/shows (1, 1, 3)
 
     -- x++
-    moveRight :: State -> Dimensions -> TuringMachine -> State
-    moveRight (State state1) (x, y) machine 
+    moveRight :: Action
+    moveRight state1 (x, y) machine 
         | (first state1 + 1) < x = (machine !! second state1) !! (first state1 + 1)
         | otherwise = head (machine !! second state1)
     -- Test Cases:
@@ -131,3 +132,21 @@ module TuringMachine where
     blankInit :: Dimensions -> Symbol -> TuringMachine
     -- blankInit dims symbol = [[symbol] * second dims] * first dims
     blankInit dims symbol = [[State (x, y, symbol) | x <- [0..fst dims]] | y <- [0..snd dims]]
+
+    transInit :: TuringMachine -> [[Action]] -> [[Symbol -> Symbol]] -> Dimensions -> (Int, Int) -> [[Transition]]
+    transInit [[]] [[]] [[]] _ _ = [[]]
+    transInit states actions rules dims index
+        | fst index + 1 >= fst dims && snd index + 1 >= snd dims = [[Transition (newState, action)]]
+        | notWrapped = [[Transition (newState, action)] ++ head (transInit states actions rules dims ((fst index) + 1, snd index))] ++ tail (transInit states actions rules dims ((fst index) + 1, snd index))
+        | otherwise = [[Transition (newState, action)]] ++ transInit states actions rules dims (0, snd index + 1)
+                            where 
+                                currState = (states !! snd index) !! fst index
+                                newState = State (first currState, second currState, rule (third currState))
+                                rule = (rules !! snd index) !! fst index
+                                action = (actions !! snd index) !! fst index
+                                notWrapped = (fst index + 1) < fst dims
+    -- Test Cases:
+    sub1 :: Symbol -> Symbol
+    sub1 (Symbol x) = Symbol (x - 1)
+    -- transInit [[]] [[]] [[]] (0,0) (0,0)
+    -- transInit [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]] [[moveRight, moveLeft], [moveUp, moveDown]] [[sub1, sub1], [sub1, sub1]] (2, 2) (0, 0)
