@@ -20,10 +20,12 @@ module Render where
   -- TBD: conversion to scene needed? only there for play to remove the animation once its
   -- done but seqA also does that.
   -- use fold for seqA ?
-  rendermain :: Duration -> Dimensions -> TuringMachine -> IO ()
-  rendermain dur dims machine = reanimate $ mkAnimation dur $ scene $ do 
-    $ withViewBox(0, 0, (fst dims), (snd dims)) $ mkBackground "black" $ 
-    play $ seqA $ map (transitionAnim 1) machine
+  rendermain :: Dimensions -> TuringMachine -> IO ()
+  rendermain dims machine = reanimate 
+    $ scene 
+    $ do 
+      newSpriteSVG_ $ withViewBox (0, 0, (fst dims), (snd dims)) $ mkBackground "black" 
+      $ play $ seqA $ map (transitionAnim 1) machine
   -- output: SVG file with black canvas and Turing output.
   -- TO CALL:
   -- main Double (Int, Int) blankInit 
@@ -46,8 +48,10 @@ module Render where
   -- since the animations for changing the states of all symbols on screen happens 
   -- simultaneously, use fork for this animation.
   transitionAnim :: Duration -> [State] -> Animation
-  transitionAnim dur lostates = mkAnimation dur $ scene $ fork 
-    $ play $ mkGroup $ map (stateTransition 1) lostates
+  transitionAnim dur lostates = mkAnimation dur 
+    $ scene 
+      $ fork 
+        $ play $ map (stateTransition 1) lostates
 
   -- STATE TRANSITION
   -- generate a new sprite for the given state as specified for this particular frame. call 
@@ -56,19 +60,23 @@ module Render where
   -- TBD: verify functionality of oTranslate, need animation ? 
   -- generate a list of symbols beforehand so we don't get random generation?
   stateTransition :: Duration -> State -> Animation
-  stateTransition dur currstate = do $ scene $ newSprite $ mkCircle 1 $ 
-    oTranslate (V2 (first currstate) (second currstate)) $ 
-    withFillColorPixel $ generateSymbol  (third currstate)
-
-  -- takes an input of Symbol type and extracts the number value that represents the symbol 
-  -- and uses Reanimate's ColorMap functions to generate a pixel with a color that corresponds 
-  -- to the given [0,1] double value. this will be the representation for that symbol in 
-  -- rendering.
-
-  -- TODO figure out if the [0,1] double representation actually works with the TuringMachine
-  -- functionality or if we will have to devise some kind of calculation to convert it to the 
-  -- required representation.
-  generateSymbol :: Symbol -> PixelRGB8
-  -- generateSymbol (symb dbl) = turbo dbl 
-  -- assuming Symbol is of type (Symbol Double) containing a double value between 0 and 1. 
-  -- can adjust as needed.
+  stateTransition dur currstate = do 
+      $ scene 
+        $ newSprite 
+          $ withFillColorPixel (generateSymbol (third currstate))
+            $ mkCircle 1 
+            $ oTranslate (V2 (first currstate) (second currstate)) 
+    
+  -- takes an input of Symbol type and extracts the Int value that represents the symbol 
+  -- and uses the function mkColor to generate a SVG constructor Texture (which can be 
+  -- represented as PixelRGBA8) to represent the corresponding symbol to that particular
+  -- color. reverts back to background color if number is out of bounds of legal symbol
+  -- limit.
+  generateSymbol :: Symbol -> PixelRGBA8
+  generateSymbol (symb n)
+    | n == 1 = mkColor "white"
+    | n == 2 = mkColor "red"
+    | n == 3 = mkColor "yellow"
+    | n == 4 = mkColor "green"
+    | n == 5 = mkColor "blue"
+    | otherwise = mkColor "black"
