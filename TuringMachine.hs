@@ -55,6 +55,12 @@ module TuringMachine where
     instance Show Transition where
         show (Transition (a, b)) = "(" ++ show a ++ "," ++ show b ++ ")"
 
+    fstTrans :: Transition -> State
+    fstTrans (Transition (s, _)) = s
+
+    sndTrans :: Transition -> Action
+    sndTrans (Transition (_, a)) = a
+
     -- (height, width)
     type Dimensions = (Int, Int)
 
