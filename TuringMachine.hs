@@ -1,22 +1,16 @@
 module TuringMachine where
 
-    -- TODO:
-    -- figure out how to also intialize the transitions along with the Turing Machine
-
-    -- programs.js in Maxime's code
-
-    -- machine has:
-    -- states - some sort of collection of states the machine can be in
-    -- symbols - some sort of collection of symbols (like changing the pixel colour?)
+    -- this code defines:
+    -- states - triplet that represents the index in the canvas and the colour of the pixel
+    -- symbols - Int that represents the colour (enumerated in Render)
     -- actions - the types of actions the machine can do (i.e. move left, right, up, down)
-    -- transitions - from state and symbol to new state and symbol, then do transition
-    -- mapWidth - dimension of the canvas
-    -- mapHeight - dimension of the canvas
+    -- transitions - pair of state (the new state) and action, indexed through 2d list in transInt
+    -- dimensions - pair of int that define the width and height of the canvas
+    -- turingmachine - current states in the canvas as a 2d list
 
     -- (x, y, pixel colour)
     newtype State = State (Int, Int, Symbol)
         -- deriving (Show)
-    -- (?) deriving (Eq)
 
     -- show as a triple
     instance Show State where
@@ -43,8 +37,7 @@ module TuringMachine where
     type Action = State -> Dimensions -> TuringMachine -> State
         -- deriving (Show)
 
-    -- Show for functions doesn't really work well... 
-    -- This is mainly for testing purposes
+    -- Show for functions doesn't really work well, this is for debugging and testing purposes
     instance Show Action where
         show _ = "An action!"
 
@@ -64,8 +57,6 @@ module TuringMachine where
     -- (height, width)
     type Dimensions = (Int, Int)
 
-    -- 
-    -- type TuringMachine = State -> [Transition] -> State
     type TuringMachine = [[State]]
 
     -- defining different actions
@@ -136,9 +127,11 @@ module TuringMachine where
 
     -- initialize the Turing Machine given the same symbol across the canvas
     blankInit :: Dimensions -> Symbol -> TuringMachine
-    -- blankInit dims symbol = [[symbol] * second dims] * first dims
     blankInit dims symbol = [[State (x, y, symbol) | x <- [0..fst dims]] | y <- [0..snd dims]]
 
+    -- initialize a 2d list of transitions using the 
+    -- current turingmachine states, actions that can be taken, a function to change the symbols appropriately, 
+    -- the dimensions of the canvas, an index (for generation purposes)
     transInit :: TuringMachine -> [[Action]] -> [[Symbol -> Symbol]] -> Dimensions -> (Int, Int) -> [[Transition]]
     transInit [[]] [[]] [[]] _ _ = [[]]
     transInit states actions rules dims index
@@ -151,6 +144,7 @@ module TuringMachine where
                                 rule = (rules !! snd index) !! fst index
                                 action = (actions !! snd index) !! fst index
                                 notWrapped = (fst index + 1) < fst dims
+    
     -- Test Cases:
     sub1 :: Symbol -> Symbol
     sub1 (Symbol x) = Symbol (x - 1)
