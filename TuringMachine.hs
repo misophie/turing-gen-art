@@ -149,4 +149,10 @@ module TuringMachine where
     sub1 :: Symbol -> Symbol
     sub1 (Symbol x) = Symbol (x - 1)
     -- transInit [[]] [[]] [[]] (0,0) (0,0)
+    -- machine = [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]]
+    -- actions = [[moveRight, moveLeft], [moveUp, moveDown]]
+    -- symbolFns = [[sub1, sub1], [sub1, sub1]]
+    -- dims = (2, 2)
+    -- index = (0, 0)
     -- transInit [[State (0, 0, Symbol 0), State (1, 0, Symbol 1)], [State (0, 1, Symbol 2), State (1, 1, Symbol 3)]] [[moveRight, moveLeft], [moveUp, moveDown]] [[sub1, sub1], [sub1, sub1]] (2, 2) (0, 0)
+    -- transInit machine actions symbolFns dims index
